@@ -3,7 +3,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/icon"
+        android:icon="@drawable/ic_launcher"
         android:label="StellarRunner"
         android:supportsRtl="true"
         android:theme="@style/Theme.StellarRunner">
@@ -39,7 +39,7 @@
         <service
             android:name=".TileService"
             android:exported="true"
-            android:icon="@drawable/run"
+            android:icon="@drawable/ic_terminal"
             android:label="点击执行命令"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
