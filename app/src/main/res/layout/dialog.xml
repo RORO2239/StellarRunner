@@ -2,50 +2,70 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="20dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="命令标题"
         android:layout_gravity="center"
-        >
+        android:text="命令标题">
 
     </TextView>
 
     <EditText
         android:id="@+id/a"
-        android:background="@null"
-        android:paddingVertical="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:singleLine="true"
+        android:background="@null"
         android:hint="起个名字吧"
-        />
+        android:paddingVertical="10dp"
+        android:singleLine="true" />
 
-    <TextView
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="命令内容"
-        >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    </TextView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:text="命令内容" />
+
+        <ImageView
+            android:id="@+id/undo"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/undo" />
+
+        <ImageView
+            android:id="@+id/redo"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/redo"
+            android:src="@drawable/redo" />
+
+    </RelativeLayout>
+
 
     <EditText
-        android:selectAllOnFocus="true"
         android:id="@+id/e"
-        android:paddingVertical="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:singleLine="true"
         android:background="@null"
-        android:hint="如：ls -l"/>
+        android:hint="如：ls -l"
+        android:paddingVertical="10dp"
+        android:selectAllOnFocus="true"
+        android:singleLine="true" />
 
     <CheckBox
-        android:layout_gravity="center"
         android:id="@+id/cb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="将root权限降至shell" />
+        android:layout_gravity="center"
+        android:text="将root权限降低至adb" />
 </LinearLayout>

@@ -3,20 +3,14 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        release {
-            storeFile file('D:\\ginkgo\\文件备份\\key.keystore')
-            storePassword 'wewewe'
-            keyPassword 'wewewe'
-            keyAlias 'key0'
-        }
-    }
-    compileSdk 32
+    namespace 'com.stellar.runner'
+    compileSdk 36
+    buildToolsVersion "36.0.0"
 
     defaultConfig {
-        applicationId "com.shizuku.uninstaller"
-        minSdk 23
-        targetSdk 32
+        applicationId "com.stellar.runner"
+        minSdk 24
+        targetSdk 36
         versionCode 13
         versionName "13"
 
@@ -29,13 +23,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
 dependencies {
-    implementation "dev.rikka.shizuku:api:12.2.0"
-    implementation "dev.rikka.shizuku:provider:12.2.0"
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+    
+    // Kotlin 标准库 - Stellar 需要
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
 }
