@@ -6,7 +6,7 @@
         android:icon="@mipmap/icon"
         android:label="StellarRunner"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.DeviceDefault.Dialog">
+        android:theme="@style/Theme.StellarRunner">
 
         <provider
             android:name="roro.stellar.StellarProvider"
@@ -37,7 +37,7 @@
             android:exported="false" />
 
         <service
-            android:name=".tileService"
+            android:name=".TileService"
             android:exported="true"
             android:icon="@drawable/run"
             android:label="点击执行命令"
@@ -51,7 +51,7 @@
         </service>
 
         <activity
-            android:name=".tileSetting"
+            android:name=".TileSetting"
             android:excludeFromRecents="true"
             android:exported="false"
             android:launchMode="singleTask">

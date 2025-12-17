@@ -5,10 +5,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.7.3"
+        classpath 'com.android.tools.build:gradle:8.13.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0"
+        classpath "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable:2.1.0"
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete layout.buildDirectory
 }

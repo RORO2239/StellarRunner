@@ -1,71 +1,54 @@
-package com.stellar.runner;
+package com.stellar.runner
 
-import android.app.Activity;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
+import android.os.Build
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import roro.stellar.Stellar
+import kotlin.concurrent.thread
 
-import java.io.OutputStream;
+class ExecNoDisplay : ComponentActivity() {
 
-import roro.stellar.Stellar;
+    private var process: Process? = null
+    private var executionThread: Thread? = null
 
-public class ExecNoDisplay extends Activity {
-
-    Process p;
-    Thread h1;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        h1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                StellarExec(getIntent().getStringExtra("content"));
-            }
-        });
-        h1.start();
-        super.onCreate(savedInstanceState);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        executionThread = thread {
+            executeCommand(intent.getStringExtra("content").orEmpty())
+        }
+        
+        finish()
     }
 
-
-    public void StellarExec(String cmd) {
-        try {
-            //使用Stellar执行命令
-            p = Stellar.INSTANCE.newProcess(new String[]{"sh"}, null, null);
-            OutputStream out = p.getOutputStream();
-            out.write((cmd + "\n").getBytes());
-            out.flush();
-            out.close();
-            //等待命令运行完毕
-            p.waitFor();
-
-        } catch (Exception ignored) {
+    private fun executeCommand(command: String) {
+        runCatching {
+            process = Stellar.newProcess(arrayOf("sh"), null, null)
+            
+            process?.outputStream?.use { output ->
+                output.write("$command\n".toByteArray())
+                output.flush()
+            }
+            
+            process?.waitFor()
+        }.onFailure { e ->
+            e.printStackTrace()
         }
     }
 
-
-    @Override
-    public void onDestroy() {
-        //关闭所有输入输出流，销毁进程，防止内存泄漏等问题
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (Build.VERSION.SDK_INT >= 26) {
-                        p.destroyForcibly();
-                    } else {
-                        p.destroy();
-                    }
-                    h1.interrupt();
-                } catch (Exception ignored) {
-                }
-            }
-        });
-        super.onDestroy();
+    override fun onDestroy() {
+        runCatching {
+            process?.destroyProcess()
+            executionThread?.interrupt()
+        }
+        super.onDestroy()
     }
 
-    @Override
-    protected void onResume() {
-        finish();
-        super.onResume();
+    private fun Process.destroyProcess() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            destroyForcibly()
+        } else {
+            destroy()
+        }
     }
 }
