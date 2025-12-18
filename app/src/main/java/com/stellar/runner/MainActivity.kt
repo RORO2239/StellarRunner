@@ -75,6 +75,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -98,11 +99,14 @@ class MainActivity : ComponentActivity() {
     private val activityManager: ActivityManager by lazy { getSystemService()!! }
     private val clipboardManager: ClipboardManager by lazy { getSystemService()!! }
     
-    private var stellarRunning = true
-    private var stellarAuthorized = false
+    private var stellarRunning = mutableStateOf(true)
+    private var stellarAuthorized = mutableStateOf(false)
 
-    private val stellarPermissionListener = Stellar.OnRequestPermissionResultListener { _, _, _ ->
+    private val stellarPermissionListener = Stellar.OnRequestPermissionResultListener { _, _, granted ->
         checkStellarStatus()
+        if (granted) {
+            Toast.makeText(this, "Stellar授权成功", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -147,16 +151,16 @@ class MainActivity : ComponentActivity() {
         val primaryColor = MaterialTheme.colorScheme.primary
         val errorColor = MaterialTheme.colorScheme.error
         
-        val stellarStatus = remember(stellarRunning, stellarAuthorized) {
+        val stellarStatus = remember(stellarRunning.value, stellarAuthorized.value) {
             when {
-                !stellarRunning -> "未运行"
-                !stellarAuthorized -> "未授权"
+                !stellarRunning.value -> "未运行"
+                !stellarAuthorized.value -> "未授权"
                 else -> "已激活"
             }
         }
         
-        val stellarColor = remember(stellarRunning, stellarAuthorized) {
-            if (stellarRunning && stellarAuthorized) {
+        val stellarColor = remember(stellarRunning.value, stellarAuthorized.value) {
+            if (stellarRunning.value && stellarAuthorized.value) {
                 primaryColor
             } else {
                 errorColor
@@ -182,7 +186,7 @@ class MainActivity : ComponentActivity() {
                                     contentAlignment = Alignment.Center
                                 ) {
                                         Icon(
-                                        imageVector = if (stellarRunning && stellarAuthorized) {
+                                        imageVector = if (stellarRunning.value && stellarAuthorized.value) {
                                             Icons.Default.CheckCircle
                                         } else {
                                             Icons.Default.Warning
@@ -353,7 +357,7 @@ class MainActivity : ComponentActivity() {
                     onClick = {
                         when {
                             !hasContent -> showEditDialog = true
-                            stellarRunning && stellarAuthorized -> showExecuteDialog = true
+                            stellarRunning.value && stellarAuthorized.value -> showExecuteDialog = true
                             else -> checkStellarStatus()
                         }
                     },
@@ -996,16 +1000,16 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkStellarStatus() {
-        stellarRunning = true
-        stellarAuthorized = false
+        stellarRunning.value = true
+        stellarAuthorized.value = false
 
         when {
             !StellarHelper.isManagerInstalled(this) -> {
-                stellarRunning = false
+                stellarRunning.value = false
                 Toast.makeText(this, "Stellar未安装", Toast.LENGTH_SHORT).show()
             }
             !Stellar.pingBinder() -> {
-                stellarRunning = false
+                stellarRunning.value = false
                 Toast.makeText(this, "Stellar未运行", Toast.LENGTH_SHORT).show()
             }
             else -> {
@@ -1013,7 +1017,7 @@ class MainActivity : ComponentActivity() {
                     if (!Stellar.checkSelfPermission("stellar")) {
                         Stellar.requestPermission("stellar", 0)
                     } else {
-                        stellarAuthorized = true
+                        stellarAuthorized.value = true
                     }
                 }.onFailure { e ->
                     Toast.makeText(this, "权限检查失败: ${e.message}", Toast.LENGTH_SHORT).show()
